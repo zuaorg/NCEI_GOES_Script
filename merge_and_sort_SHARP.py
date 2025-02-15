@@ -6,7 +6,7 @@ columns = [
     "DataStationCode", "Date", "UnconfirmedChange", "StartTime", "EndTime", "MaxTime",
     "LatitudeHemisphere", "Latitude", "LongitudeHemisphere", "LongitudeCMD",
     "SXIData", "FlareClass", "FlareIntensity", "StationAbbreviation",
-    "IntegratedFlux", "SunspotRegionNumber", "CMPDate",
+    "IntegratedFlux", "NOAASunspotRegionNumber", "CMPDate",
     "RegionArea", "TotalIntensity"
 ]
 
@@ -22,7 +22,7 @@ for year in range(2010, 2017):
     if os.path.exists(file_path):
         # Read the fixed-width formatted file
         df = pd.read_fwf(file_path, widths=[
-            5, 6, 2, 4, 4, 4, 1, 2, 1, 2, 3, 1, 1, 4, 4, 5, 8, 7, 7
+            5, 6, 2, 5, 5, 5, 1, 2, 1, 2, 25, 2, 6, 5, 8, 6, 9, 8, 7
         ], names=columns, skiprows=1, dtype=str)
 
         # Add to list
@@ -39,16 +39,26 @@ string_columns = [
     "DataStationCode", "Date", "StartTime", "EndTime", "MaxTime",
     "LatitudeHemisphere", "Latitude", "LongitudeHemisphere", "LongitudeCMD",
     "SXIData", "FlareClass", "FlareIntensity", "StationAbbreviation",
-    "IntegratedFlux", "SunspotRegionNumber", "CMPDate",
+    "IntegratedFlux", "NOAASunspotRegionNumber", "CMPDate",
     "RegionArea", "TotalIntensity"
 ]
 merged_df[string_columns] = merged_df[string_columns].astype(str)
 
 # Show all columns
-with pd.option_context('display.max_columns', None):
-    print(merged_df.head())
+#with pd.option_context('display.max_columns', None):
+ #   print(merged_df.head())
 
 # Save the merged DataFrame to a CSV for future use
-merged_df.to_csv("merged_goes_data_2010_2016.csv", index=False)
+#merged_df.to_csv("merged_goes_data_2010_2016.csv", index=False)
 
-print("Data merging complete. Saved to 'merged_goes_data_2010_2016.csv'.")
+#print("Data merging complete. Saved to 'merged_goes_data_2010_2016.csv'.")
+
+# Keep only rows where FlareClass is "M" or "X"
+filtered_df = merged_df[merged_df["FlareClass"].isin(["M", "X"])]
+
+# Display the result
+with pd.option_context('display.max_columns', None):
+    print(filtered_df.head())
+
+# Save the filtered data
+filtered_df.to_csv("filtered_goes_data.csv", index=False)
