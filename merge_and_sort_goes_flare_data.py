@@ -44,14 +44,29 @@ string_columns = [
 ]
 merged_df[string_columns] = merged_df[string_columns].astype(str)
 
-# Show all columns
-#with pd.option_context('display.max_columns', None):
- #   print(merged_df.head())
+# Filter out invalid Date values (non-numeric or incorrect length)
+merged_df = merged_df[merged_df["Date"].str.match(r"^\d{6}$", na=False)]  # Keep only 6-digit numeric values
+
+# Convert the 6-digit "Date" column (YYMMDD) into YYYY-MM-DD format
+merged_df["Year"] = "20" + merged_df["Date"].str[:2]  # Extract first two digits and add "20"
+merged_df["Month"] = merged_df["Date"].str[2:4]  # Extract middle two digits
+merged_df["Day"] = merged_df["Date"].str[4:6]  # Extract last two digits
+
+# Combine Date and StartTime into a single datetime column
+merged_df["DateTime"] = pd.to_datetime(
+    merged_df["Year"] + merged_df["Month"] + merged_df["Day"] + merged_df["StartTime"].str[:2] + merged_df["StartTime"].str[2:],
+    format="%Y%m%d%H%M", errors="coerce"
+)
+
+
+# Drop the separate Year, Month, and Day columns if not needed
+merged_df.drop(columns=["Year", "Month", "Day"], inplace=True)
+
 
 # Save the merged DataFrame to a CSV for future use
-#merged_df.to_csv("merged_goes_data_2010_2016.csv", index=False)
+merged_df.to_csv("results/merged_goes_flare_data_2010_2016.csv", index=False)
 
-#print("Data merging complete. Saved to 'merged_goes_data_2010_2016.csv'.")
+print("Data merging complete. Saved to 'results/merged_goes_flare_data_2010_2016.csv'.")
 
 # Keep only rows where FlareClass is "M" or "X"
 filtered_df = merged_df[merged_df["FlareClass"].isin(["M", "X"])]
@@ -61,4 +76,4 @@ with pd.option_context('display.max_columns', None):
     print(filtered_df.head())
 
 # Save the filtered data
-filtered_df.to_csv("filtered_goes_data.csv", index=False)
+filtered_df.to_csv("results/filtered_goes_flare_data.csv", index=False)
