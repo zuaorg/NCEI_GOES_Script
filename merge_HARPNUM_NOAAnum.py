@@ -17,6 +17,7 @@ merged_df = sharp_data.merge(noaa_df, on="HARPNUM", how="left")
 
 # Display the merged dataset
 print(merged_df.head())
+print(merged_df.count())
 
 # Save merged data if needed
 merged_df.to_csv("results/merged_HARPNUM_NOAAnum.csv", index=False)

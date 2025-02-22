@@ -70,6 +70,7 @@ print("Data merging complete. Saved to 'results/merged_goes_flare_data_2010_2016
 
 # Keep only rows where FlareClass is "M" or "X"
 filtered_df = merged_df[merged_df["FlareClass"].isin(["M", "X"])]
+print(filtered_df.count())
 
 # Display the result
 with pd.option_context('display.max_columns', None):
